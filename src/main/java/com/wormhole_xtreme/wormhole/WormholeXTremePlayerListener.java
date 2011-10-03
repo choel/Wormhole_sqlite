@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.wormhole_xtreme.wormhole.config.ConfigManager;
 import com.wormhole_xtreme.wormhole.logic.StargateHelper;
@@ -83,6 +84,8 @@ class WormholeXTremePlayerListener extends PlayerListener
         }
         else
         {
+        	if (player.getItemInHand().getTypeId() == 57) 
+        	{
             if (direction == null)
             {
                 switch (clickedBlock.getData())
@@ -126,37 +129,48 @@ class WormholeXTremePlayerListener extends PlayerListener
             {
                 if (WXPermissions.checkWXPermissions(player, newGate, PermissionType.BUILD) && !StargateRestrictions.isPlayerBuildRestricted(player))
                 {
-                    if (newGate.isGateSignPowered())
+                    if (newGate.isGateSignPowered() && player.getItemInHand().getTypeId() == 57)
                     {
-                        player.sendMessage(ConfigManager.MessageStrings.normalHeader.toString() + "Stargate Design Valid with Sign Nav.");
-                        if (newGate.getGateName().equals(""))
-                        {
-                            player.sendMessage(ConfigManager.MessageStrings.constructNameInvalid.toString() + "\"\"");
-                        }
-                        else
-                        {
-                            final boolean success = StargateManager.completeStargate(player, newGate);
-                            if (success)
-                            {
-                                player.sendMessage(ConfigManager.MessageStrings.constructSuccess.toString());
-                                newGate.getGateDialSign().setLine(0, "-" + newGate.getGateName() + "-");
-                                newGate.getGateDialSign().setData(newGate.getGateDialSign().getData());
-                                newGate.getGateDialSign().update();
-                            }
-                            else
-                            {
-                                player.sendMessage("Stargate constrution failed!?");
-                            }
-                        }
-
+                    	//take a diamond block
+                    	ItemStack is = player.getItemInHand();//If I put the setAmount here it would not return an ItemStack
+                    	is.setAmount(is.getAmount() - 1);
+                    	player.setItemInHand(is); 
+                    	player.sendMessage("\u00A73:: \u00A77Consuming a diamond block to complete the Stargate");
+                    	player.sendMessage(ConfigManager.MessageStrings.normalHeader.toString() + "Stargate Design Valid with Sign Nav.");
+                    		if (newGate.getGateName().equals(""))
+                    		{
+                    			player.sendMessage(ConfigManager.MessageStrings.constructNameInvalid.toString() + "\"\"");
+                    		}
+                    		else
+                    		{
+                    			final boolean success = StargateManager.completeStargate(player, newGate);
+                    			if (success && player.getItemInHand().getTypeId() == 57)
+                    			{
+                    				player.sendMessage(ConfigManager.MessageStrings.constructSuccess.toString());
+                    				newGate.getGateDialSign().setLine(0, "-" + newGate.getGateName() + "-");
+                    				newGate.getGateDialSign().setData(newGate.getGateDialSign().getData());
+                    				newGate.getGateDialSign().update();
+                    			}
+                    			else
+                            	{
+                            	player.sendMessage("Stargate constrution failed!?");
+                            	}
+                    		}
                     }
                     else
                     {
+                    	if (!newGate.isGateSignPowered()) {
                         // Print to player that it was successful!
                         player.sendMessage(ConfigManager.MessageStrings.normalHeader.toString() + "Valid Stargate Design! \u00A73:: \u00A7B<required> \u00A76[optional]");
                         player.sendMessage(ConfigManager.MessageStrings.normalHeader.toString() + "Type \'\u00A7F/wxcomplete \u00A7B<name> \u00A76[idc=IDC] [net=NET]\u00A77\' to complete.");
                         // Add gate to unnamed gates.
                         StargateManager.addIncompleteStargate(player, newGate);
+                    	} else { 
+                    		//Tell them that they need a diamond block
+                    		player.sendMessage("\u00A73:: \u00A77You must be holding a diamond block to construct a Stargate");
+                    		player.sendMessage("\u00A73:: \u00A77Your sign was damaged by not using a diamond block");
+                    		player.sendMessage("\u00A73:: \u00A77Please fix your sign and hold a diamond block when you flip the lever");
+                    	}
                     }
                     return true;
                 }
@@ -180,7 +194,9 @@ class WormholeXTremePlayerListener extends PlayerListener
                 WormholeXTreme.getThisPlugin().prettyLog(Level.FINE, false, player.getName() + " has pressed a button or lever but did not find any properly created gates.");
             }
         }
+        }
         return false;
+        
     }
 
     /**
@@ -377,7 +393,7 @@ class WormholeXTremePlayerListener extends PlayerListener
                 player.setNoDamageTicks(5);
                 event.setFrom(stargate.getGatePlayerTeleportLocation());
                 event.setTo(stargate.getGatePlayerTeleportLocation());
-                player.teleport(stargate.getGatePlayerTeleportLocation());
+                //player.teleport(stargate.getGatePlayerTeleportLocation());
                 return true;
             }
 
@@ -385,7 +401,7 @@ class WormholeXTremePlayerListener extends PlayerListener
             player.setNoDamageTicks(5);
             event.setFrom(target);
             event.setTo(target);
-            player.teleport(target);
+            //player.teleport(target);
             if (target != stargate.getGatePlayerTeleportLocation())
             {
                 WormholeXTreme.getThisPlugin().prettyLog(Level.INFO, false, player.getName() + " used wormhole: " + stargate.getGateName() + " to go to: " + stargate.getGateTarget().getGateName());
@@ -464,7 +480,7 @@ class WormholeXTremePlayerListener extends PlayerListener
     {
         if (handlePlayerMoveEvent(event))
         {
-            event.setCancelled(true);
+            ///event.setCancelled(true);
         }
     }
 }

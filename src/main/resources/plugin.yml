@@ -1,7 +1,7 @@
 name: WormholeXTreme
 main: com.wormhole_xtreme.wormhole.WormholeXTreme
-version: 0.854
-authors: [Lologarithm, alron]
+version: 0.854.C2.3
+authors: [Lologarithm, alron, choelian]
 softdepend: [Permissions, Help, WormholeXTremeWorlds]
 description: >
              Wormhole X-Treme! Wormholes as travel portals. Splash Effect, IDC,

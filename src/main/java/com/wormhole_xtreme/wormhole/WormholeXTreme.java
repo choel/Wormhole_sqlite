@@ -1,5 +1,5 @@
 /*
- *   Wormhole X-Treme Plugin for Bukkit
+44 *   Wormhole X-Treme Plugin for Bukkit
  *   Copyright (C) 2011  Ben Echols
  *                       Dean Bailey
  *
@@ -329,6 +329,16 @@ public class WormholeXTreme extends JavaPlugin
     public void onEnable()
     {
         prettyLog(Level.INFO, true, "Enable Beginning.");
+        
+        DBUpdateUtil.updateDB();
+        // Load our shapes, stargates, and internal permissions.
+        StargateHelper.loadShapes();
+        if ( !ConfigManager.isWormholeWorldsSupportEnabled())
+        {
+            prettyLog(Level.INFO, true, "Wormhole Worlds support disabled in settings.txt, loading stargates and worlds ourself.");
+            StargateDBManager.loadStargates(getThisPlugin().getServer());
+        }
+        
         // Try and attach to Permissions and iConomy and Help
         try
         {
@@ -369,14 +379,7 @@ public class WormholeXTreme extends JavaPlugin
         ConfigManager.setupConfigs(getThisPlugin().getDescription());
         WormholeXTreme.setPrettyLogLevel(ConfigManager.getLogLevel());
         // Make sure DB is up to date with latest SCHEMA
-        DBUpdateUtil.updateDB();
-        // Load our shapes, stargates, and internal permissions.
-        StargateHelper.loadShapes();
-        if ( !ConfigManager.isWormholeWorldsSupportEnabled())
-        {
-            prettyLog(Level.INFO, true, "Wormhole Worlds support disabled in settings.txt, loading stargates and worlds ourself.");
-            StargateDBManager.loadStargates(getThisPlugin().getServer());
-        }
+       
         PermissionsManager.loadPermissions();
         prettyLog(Level.INFO, true, "Load Completed.");
     }
